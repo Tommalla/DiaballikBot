@@ -1,0 +1,3 @@
+[submodule "DiaballikEngine"]
+	path = DiaballikEngine
+	url = git://github.com/Tommalla/DiaballikEngine.git
