@@ -1,1 +1,8 @@
-#TODO a Makefile consistent with the contest rules, running cmake
+.DEFAULT: engine
+
+engine:
+	rm -rf build
+	mkdir build
+	(cd build && cmake .. && make)
+	cp build/DiaballikBot engine
+
