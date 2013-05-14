@@ -5,15 +5,24 @@ All rights reserved */
 #define SINGLETON_H
 
 /**
- * @brief Singleton class
+ * @brief Singleton class template
  **/
+template <class T>
 class Singleton {
 	private:
-		Singleton();
-		Singleton ( const Singleton& other );
-		Singleton& operator= ( const Singleton& other );
+		Singleton<T>( const Singleton& other );
+		Singleton<T>& operator= ( const Singleton<T>& other );
+	protected:
+		Singleton<T>(){};
 	public:
-		static Singleton& getInstance();
+		static T& getInstance();
 };
+
+template <class T>
+T& Singleton<T>::getInstance()
+{
+	static T instance;
+	return instance;
+}
 
 #endif // SINGLETON_H
