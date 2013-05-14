@@ -10,7 +10,6 @@ set (SOURCES
 	CommunicationHandler.cpp
 	GTPParser.cpp
 	main.cpp
-	Singleton.cpp
 )
 
 add_executable (DiaballikBot ${SOURCES} 

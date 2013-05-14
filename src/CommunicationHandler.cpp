@@ -3,3 +3,7 @@ All rights reserved */
 
 #include "CommunicationHandler.h"
 
+void CommunicationHandler::init() {
+	while (666) {}
+}
+

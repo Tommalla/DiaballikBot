@@ -5,7 +5,7 @@ All rights reserved */
 #define GTPPARSER_H
 #include "Singleton.h"
 
-class GTPParser : public Singleton {
+class GTPParser : public Singleton<GTPParser> {
 };
 
 #endif // GTPPARSER_H
