@@ -3,6 +3,7 @@ All rights reserved */
 #include <cstring>
 #include "CommunicationHandler.h"
 #include "botConstants.h"
+#include "GTPParser.h"
 
 const string CommunicationHandler::readLine() {
 	static char buffer[BUFFER_SIZE];
@@ -22,7 +23,7 @@ void CommunicationHandler::init() {
 	
 	while (666) {
 		command = this->readLine();
-		puts(command.c_str());
+		printf("%s", (GTPParser::getInstance().executeCommand(command)).c_str());
 	}
 }
 
