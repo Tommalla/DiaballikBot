@@ -39,14 +39,18 @@ const string GTPParser::executeCommand(const string& command) {
 			break;
 		case GTP_GEN_MOVE:
 			assert(moves.size() <= 3);
+			
+			{
+				string res = "=";
 				
-			string res = "=";
+				for(Move move: moves)
+					res += " " + this->convertFromMove(move).first + " " + this->convertFromMove(move).second;
 				
-			for(Move move: moves)
-				res += " " + this->convertFromMove(move).first + " " + this->convertFromMove(move).second;
-				
-			return res;
+				return res + "\n\n";
+			}
 			break;
+		default:
+			return "? Unknown in-game command: " + iter->second;
 	}
 	
 	return "=\n\n";
