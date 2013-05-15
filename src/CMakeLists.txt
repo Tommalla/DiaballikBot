@@ -2,6 +2,8 @@ set (CMAKE_CXX_FLAGS "-std=c++11")
 
 set (HEADERS
 	AI.h
+	botConstants.h
+	botEnums.h
 	CommunicationHandler.h
 	GTPParser.h
 	Singleton.h
