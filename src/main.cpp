@@ -4,6 +4,7 @@ MIMUW, 2013 */
 #include "CommunicationHandler.h"
 
 int main() {
-	CommunicationHandler::getInstance().init();
-	return 0;
+	//TODO: create and bind an AI object here
+	CommunicationHandler::getInstance().init();	//passing control
+	return 0;	//quitting
 }
