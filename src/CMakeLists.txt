@@ -20,4 +20,6 @@ add_executable (DiaballikBot ${SOURCES}
 	${HEADERS} 
 )
 
+target_link_libraries(DiaballikBot DiaballikEngine)
+
 include_directories (${CMAKE_CURRENT_BINARY_DIR})

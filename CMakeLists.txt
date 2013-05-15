@@ -4,5 +4,5 @@ project (DiaballikBot)
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-#add_subdirectory(DiaballikEngine)
+add_subdirectory(DiaballikEngine)
 add_subdirectory (src)
