@@ -1,12 +1,14 @@
 set (CMAKE_CXX_FLAGS "-std=c++11")
 
 set (HEADERS
+	AI.h
 	CommunicationHandler.h
 	GTPParser.h
 	Singleton.h
 )
 
 set (SOURCES
+	AI.cpp
 	CommunicationHandler.cpp
 	GTPParser.cpp
 	main.cpp
