@@ -24,7 +24,7 @@ class GTPParser : public Singleton<GTPParser> {
 		const string executeCommand(const string &command);
 		//TODO a namespace ?
 		const vector<string> splitString(const string& str) const;
-		const Move convertToMove(const string &from, const string &to);
+		const Move convertToMove(const string from, const string to);
 		const pair<const string&, const string&> convertFromMove(const Move& move);
 };
 

@@ -2,6 +2,7 @@
 All rights reserved */
 
 #include "AI.h"
+#include "CommunicationHandler.h"
 
 AI::AI() {
 	this->player = NONE;
@@ -19,6 +20,7 @@ const vector< Move > AI::gen_move() {
 
 
 void AI::play(vector<Move> moves) {
+	CommunicationHandler::getInstance().printDebug("AI::play");
 	//determining the player
 	if (this->player == NONE)
 		this->player = this->currentGame.getOppositePlayer(
@@ -26,6 +28,8 @@ void AI::play(vector<Move> moves) {
 		
 	for (Move move: moves)
 		this->currentGame.makeMove(move);
+	
+	CommunicationHandler::getInstance().printDebug(this->currentGame.toString());
 	return;
 }
 

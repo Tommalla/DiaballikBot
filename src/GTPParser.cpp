@@ -27,13 +27,19 @@ const string GTPParser::executeCommand(const string& command) {
 	if (iter == this->commandMap.end())
 		return "? Unknown command: " + args[0] + "\n\n";
 	
+	CommunicationHandler::getInstance().printDebug("Args:");
+	for(string str: args)
+		CommunicationHandler::getInstance().printDebug(str);
+	
 	vector<Move> moves;
 	
 	switch (iter->second) {
 		case GTP_PLAY:
+			CommunicationHandler::getInstance().printDebug("args.size() = " + string({char(args.size() + '0')}));
 			assert(args.size() <= 7);
+			assert((args.size() - 1) % 2 == 0);
 			
-			for (int i = 1; i < args.size(); i += 2)
+			for (int i = 1; i + 1 < args.size(); i += 2)
 				moves.push_back(this->convertToMove(args[i], args[i + 1]));
 			
 			this->ai->play(moves);
@@ -69,7 +75,8 @@ const vector< string > GTPParser::splitString(const string& str) const {
 	do {
 		string sub;
 		iss >> sub;
-		res.push_back(sub);
+		if (sub.empty() == false)
+			res.push_back(sub);
 	} while (iss);
 	
 	return res;
@@ -86,17 +93,17 @@ const pair<const string&, const string&> GTPParser::convertFromMove(const Move& 
 }
 
 
-const Move GTPParser::convertToMove(const string& from, const string& to) {
-	//CommunicationHandler::getInstance().printDebug("convertToMove: " + from + ", " + to);
-	//TODO debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const Move GTPParser::convertToMove(const string from, const string to) {
+	CommunicationHandler::getInstance().printDebug("convertToMove: " + from + ", " + to);
+	
 	assert(from.length() == 2 && to.length() == 2);
 	assert(from[0] >= 'a' && from[0] <= 'g');
 	assert(from[1] >= '1' && from[1] <= '7');
 	assert(to[0] >= 'a' && to[0] <= 'g');
 	assert(to[1] >= '1' && to[1] <= '7');
 	
-	return Move(Point(from[0] - 'a', from[1] - '0'), 
-		    Point(to[0] - 'a', to[1] - '0') );
+	return Move(Point(from[0] - 'a', from[1] - '1'), 
+		    Point(to[0] - 'a', to[1] - '1') );
 }
 
 
