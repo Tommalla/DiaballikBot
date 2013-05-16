@@ -36,26 +36,22 @@ const string GTPParser::executeCommand(const string& command) {
 	switch (iter->second) {
 		case GTP_PLAY:
 			CommunicationHandler::getInstance().printDebug("args.size() = " + string({char(args.size() + '0')}));
-			assert(args.size() <= 7);
-			assert((args.size() - 1) % 2 == 0);
+			assert(args.size() == 3);
 			
-			for (int i = 1; i + 1 < args.size(); i += 2)
-				moves.push_back(this->convertToMove(args[i], args[i + 1]));
+			moves = this->convertToMoves(args[2]);
 			
 			this->ai->play(moves);
 			break;
 		case GTP_GEN_MOVE:
-			assert(moves.size() <= 3);
+			assert(args.size() == 2);
 			
 			{
-				moves = this->ai->gen_move();
+				moves = this->ai->gen_move((args[1][0] == 'w') ? GAME_PLAYER_B : GAME_PLAYER_A);
 				
-				string res = "=";
+				string res = "= ";
 				
-				for(Move move: moves) {
-					printf("%d %d -> %d %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
-					res += " " + this->convertFromMove(move).first + " " + this->convertFromMove(move).second;
-				}
+				for(Move move: moves)
+					res += this->convertFromMove(move).first + this->convertFromMove(move).second;
 				
 				CommunicationHandler::getInstance().printDebug("Dupa");
 				
@@ -90,8 +86,8 @@ const pair<const string, const string> GTPParser::convertFromMove(const Move& mo
 	assert(move.to.x >= 0 && move.to.x <= 7);
 	assert(move.to.y >= 0 && move.to.y <= 7);
 	
-	return {string( {char('a' + move.from.x), char('1' + move.from.y)} ),	//Tricky hack - making 2-elements-long tables of chars
-		string( {char('a' + move.to.x), char('1' + move.to.y)} )};
+	return {string( {char('a' + move.from.x), char('1' + (6 - move.from.y))} ),	//Tricky hack - making 2-elements-long tables of chars
+		string( {char('a' + move.to.x), char('1' + (6 - move.to.y))} )};
 }
 
 
@@ -104,8 +100,27 @@ const Move GTPParser::convertToMove(const string from, const string to) {
 	assert(to[0] >= 'a' && to[0] <= 'g');
 	assert(to[1] >= '1' && to[1] <= '7');
 	
-	return Move(Point(from[0] - 'a', from[1] - '1'), 
-		    Point(to[0] - 'a', to[1] - '1') );
+	return Move(Point(from[0] - 'a', 6 - (from[1] - '1')), 
+		    Point(to[0] - 'a', 6 - (to[1] - '1')) );
+}
+
+vector< Move > GTPParser::convertToMoves (vector< string >::reference arg) {
+	string from, to;
+	vector<Move> res;
+	
+	for(int i = 0; i + 3 < arg.size(); i += 4) {
+		from.clear();
+		to.clear();
+		from.push_back(arg[i]);
+		from.push_back(arg[i + 1]);
+		
+		to.push_back(arg[i + 2]);
+		to.push_back(arg[i + 3]);
+		
+		res.push_back(this->convertToMove(from, to));
+	}
+	
+	return res;
 }
 
 

@@ -26,6 +26,7 @@ class GTPParser : public Singleton<GTPParser> {
 		const vector<string> splitString(const string& str) const;
 		const Move convertToMove(const string from, const string to);
 		const std::pair< const string, const string > convertFromMove(const Move& move);
+		vector< Move > convertToMoves (vector< string >::reference arg);
 };
 
 #endif // GTPPARSER_H

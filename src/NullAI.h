@@ -10,7 +10,7 @@ All rights reserved */
 class NullAI : public AI {
 	public:
 		NullAI();
-		virtual const std::vector< Move > gen_move();
+		virtual const std::vector< Move > gen_move(const GamePlayer& player);
 };
 
 #endif // NULLAI_H

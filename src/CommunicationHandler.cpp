@@ -24,6 +24,7 @@ void CommunicationHandler::init() {
 	while (666) {
 		command = this->readLine();
 		printf("%s", (GTPParser::getInstance().executeCommand(command)).c_str());
+		fflush(stdout);
 	}
 }
 

@@ -1,6 +1,7 @@
 .DEFAULT: engine
+.PHONY: engine
 
-engine:
+engine: 
 	rm -rf build
 	mkdir build
 	(cd build && cmake .. && make)

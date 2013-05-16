@@ -1,4 +1,4 @@
-set (CMAKE_CXX_FLAGS "-std=c++11")
+#set (CMAKE_CXX_FLAGS "-DNDEBUG -O2 -std=c++11")
 
 set (HEADERS
 	AI.h

@@ -11,8 +11,8 @@ NullAI::NullAI() {
 }
 
 
-const std::vector< Move > NullAI::gen_move() {
-	AI::gen_move();
+const std::vector< Move > NullAI::gen_move(const GamePlayer& player) {
+	AI::gen_move(player);
 	
 	CommunicationHandler::getInstance().printDebug("NullAI::gen_move: player = " + string({char(this->player + '0')}));
 	
@@ -26,19 +26,17 @@ const std::vector< Move > NullAI::gen_move() {
 	Game tmp(this->currentGame);
 	vector< Move > res;
 	
-	printf("movesQty = %d!!!!!!!!!!!!!\n", movesQty);
-	
 	while(movesQty-- > 0) {
 		moves.clear();
 		pawns = tmp.getPawnsOf(this->player);
 		
 		for(Point pawn: pawns) {
 			destinations = tmp.getDestinationsFor(pawn);
-			printf("Pawn: %d %d\nDestinations:\n", pawn.x, pawn.y);
+			//printf("Pawn: %d %d\nDestinations:\n", pawn.x, pawn.y);
 			
 			for(Point dst: destinations) {	//we promote moves forward or within the same y
 				if ( ((this->player == GAME_PLAYER_A) ? dst.y >= pawn.y : dst.y <= pawn.y) ) {
-					printf("%d %d\n", dst.x, dst.y);
+					//printf("%d %d\n", dst.x, dst.y);
 					if (tmp.getMoveTypeFor(Move(pawn, dst)) == MOVE)
 						moves.push_back(Move(pawn, dst));
 				}
@@ -49,49 +47,47 @@ const std::vector< Move > NullAI::gen_move() {
 		
 		int choice = rand() % moves.size();
 		
-		printf("Chose[%d] %d %d -> %d %d\n", movesQty, moves[choice].from.x, moves[choice].from.y, moves[choice].to.x, moves[choice].to.y);
+		//printf("Chose[%d] %d %d -> %d %d\n", movesQty, moves[choice].from.x, moves[choice].from.y, moves[choice].to.x, moves[choice].to.y);
 		
 		res.push_back(moves[choice]);
 		tmp.makeMove(res.back());
 		
-		printf("%s\n", tmp.toString().c_str());
+		CommunicationHandler::getInstance().printDebug(tmp.toString().c_str());
 		
 		if(tmp.isFinished())
 			return res;
 	}
 	
-	puts("Now at passes");
+	//puts("Now at passes");
 	
 	while(passesQty-- > 0) {
 		moves.clear();
 		pawns = tmp.getPawnsOf(this->player);
 		for(Point pawn: pawns) {
 			destinations = tmp.getDestinationsFor(pawn);
-			printf("Pawn: %d %d\nDestinations[%d]:\n", pawn.x, pawn.y, destinations.size());
+			//printf("Pawn: %d %d\nDestinations[%d]:\n", pawn.x, pawn.y, destinations.size());
 			
 			for(Point dst: destinations)
 				if ( ((this->player == GAME_PLAYER_A) ? dst.y >= pawn.y : dst.y <= pawn.y) ) { 	//we promote moves forward or within the same y
-					printf("%d %d\n", dst.x, dst.y);
+					//printf("%d %d\n", dst.x, dst.y);
 					if (tmp.getMoveTypeFor(Move(pawn, dst)) == BALL_PASS)
 						moves.push_back(Move(pawn, dst));
 				}
 		}
 		
-		assert(!moves.empty());
+		if (moves.empty())
+			break;
 		
 		int choice = rand() % moves.size();
 		
-		printf("Choice: %d %d -> %d %d\n", moves[choice].from.x, moves[choice].from.y, moves[choice].to.x, moves[choice].to.y);
+		//printf("Choice: %d %d -> %d %d\n", moves[choice].from.x, moves[choice].from.y, moves[choice].to.x, moves[choice].to.y);
 		
 		res.push_back(moves[choice]);
 		tmp.makeMove(res.back());
 		
-		printf("%s\n", tmp.toString().c_str());
+		CommunicationHandler::getInstance().printDebug(tmp.toString().c_str());
 	}
 	
-	puts("returning");
-	for (Move move: res)
-		printf("%d %d -> %d %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
 	return res;
 }
 

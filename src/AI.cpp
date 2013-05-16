@@ -10,9 +10,9 @@ AI::AI() {
 }
 
 
-const vector< Move > AI::gen_move() {
+const vector< Move > AI::gen_move(const GamePlayer& player) {
 	if (this->player == NONE)
-		this->player = GAME_PLAYER_A; //this->currentGame.getOppositePlayer(this->currentGame.getCurrentPlayer());
+		this->player = player;//GAME_PLAYER_A; //this->currentGame.getOppositePlayer(this->currentGame.getCurrentPlayer());
 	
 	//The rest in the derived class
 	return vector<Move>();
