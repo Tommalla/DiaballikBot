@@ -6,6 +6,7 @@ set (HEADERS
 	botEnums.h
 	CommunicationHandler.h
 	GTPParser.h
+	NullAI.h
 	Singleton.h
 )
 
@@ -14,6 +15,7 @@ set (SOURCES
 	CommunicationHandler.cpp
 	GTPParser.cpp
 	main.cpp
+	NullAI.cpp
 )
 
 add_executable (DiaballikBot ${SOURCES} 
