@@ -52,8 +52,10 @@ const string GTPParser::executeCommand(const string& command) {
 				
 				string res = "=";
 				
-				for(Move move: moves)
+				for(Move move: moves) {
+					printf("%d %d -> %d %d\n", move.from.x, move.from.y, move.to.x, move.to.y);
 					res += " " + this->convertFromMove(move).first + " " + this->convertFromMove(move).second;
+				}
 				
 				CommunicationHandler::getInstance().printDebug("Dupa");
 				
@@ -82,14 +84,14 @@ const vector< string > GTPParser::splitString(const string& str) const {
 	return res;
 }
 
-const pair<const string&, const string&> GTPParser::convertFromMove(const Move& move) {
+const pair<const string, const string> GTPParser::convertFromMove(const Move& move) {
 	assert(move.from.x >= 0 && move.from.x <= 7);
 	assert(move.from.y >= 0 && move.from.y <= 7);
 	assert(move.to.x >= 0 && move.to.x <= 7);
 	assert(move.to.y >= 0 && move.to.y <= 7);
 	
-	return {string( {char('a' + move.from.x), char('0' + move.from.y)} ),	//Tricky hack - making 2-elements-long tables of chars
-		string( {char('a' + move.to.x), char('0' + move.to.y)} )};
+	return {string( {char('a' + move.from.x), char('1' + move.from.y)} ),	//Tricky hack - making 2-elements-long tables of chars
+		string( {char('a' + move.to.x), char('1' + move.to.y)} )};
 }
 
 
