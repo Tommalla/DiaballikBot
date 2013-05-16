@@ -3,6 +3,7 @@ All rights reserved */
 #include <cassert>
 #include <sstream>
 #include "GTPParser.h"
+#include "CommunicationHandler.h"
 
 GTPParser::GTPParser() : Singleton< GTPParser >() {
 	this->ai = NULL;
@@ -41,10 +42,14 @@ const string GTPParser::executeCommand(const string& command) {
 			assert(moves.size() <= 3);
 			
 			{
+				moves = this->ai->gen_move();
+				
 				string res = "=";
 				
 				for(Move move: moves)
 					res += " " + this->convertFromMove(move).first + " " + this->convertFromMove(move).second;
+				
+				CommunicationHandler::getInstance().printDebug("Dupa");
 				
 				return res + "\n\n";
 			}
@@ -82,6 +87,8 @@ const pair<const string&, const string&> GTPParser::convertFromMove(const Move& 
 
 
 const Move GTPParser::convertToMove(const string& from, const string& to) {
+	//CommunicationHandler::getInstance().printDebug("convertToMove: " + from + ", " + to);
+	//TODO debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	assert(from.length() == 2 && to.length() == 2);
 	assert(from[0] >= 'a' && from[0] <= 'g');
 	assert(from[1] >= '1' && from[1] <= '7');

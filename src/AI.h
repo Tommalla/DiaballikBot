@@ -15,8 +15,10 @@ using namespace std;
 class AI {
 	protected:
 		Game currentGame;
+		GamePlayer player;
 	public:
-		virtual const vector<Move> gen_move() = 0;
+		AI();
+		virtual const vector<Move> gen_move();
 		void play(vector<Move> moves);
 };
 
