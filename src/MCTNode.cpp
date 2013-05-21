@@ -41,9 +41,15 @@ MCTNode& MCTNode::operator= (const MCTNode& v) {
 }
 
 MCTNode::~MCTNode() {
-	for(MCTNode* iter: this->sons)
-		delete iter;
+	for(pair<vector<Move>, MCTNode*> iter: this->sons) {
+		delete iter.second;
+	}
 }
+
+const string MCTNode::getHash() const {
+	return this->game.getHash();
+}
+
 
 
 

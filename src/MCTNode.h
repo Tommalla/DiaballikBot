@@ -8,13 +8,24 @@ All rights reserved */
 
 using namespace std;
 
+//the following hash parametrization is very HACK-ish
+class MCTNode;
+
+namespace std {
+	template<>
+	struct hash<pair<vector<Move>, MCTNode*> > {
+		inline std::size_t operator()(const pair<vector<Move>, MCTNode*>& key) const;
+	};
+}
+
 /**
  * @brief Monte Carlo Tree Node
  **/
 class MCTNode {
+	
 	private:
 		Game game;
-		unordered_set<MCTNode*> sons;
+		unordered_set<pair<vector<Move>, MCTNode*> > sons;
 		int playsWon, playsQty;
 		bool isMax;
 		
@@ -42,6 +53,14 @@ class MCTNode {
 		
 		MCTNode& operator=(const MCTNode& v);
 		~MCTNode();
+		
+		const string getHash() const;
 };
+
+namespace std {
+	inline std::size_t hash<pair<vector<Move>, MCTNode*> >::operator()(const pair< vector< Move >, MCTNode* >& key) const {
+			return hash<string>()(key.second->getHash());
+	}
+}
 
 #endif // MCTNODE_H

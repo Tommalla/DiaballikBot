@@ -5,14 +5,19 @@ All rights reserved */
 #define MCTSAI_H
 
 #include "AI.h"
+#include "MCTNode.h"
 
 /**
  * @brief A Monte Carlo Tree Search based AI to play Diaballik
  **/
 class MCTSAI : public AI {
+	private:
+		MCTNode* MCTRoot;
 	public:
-		virtual const std::vector< Move, std::allocator< Move > > gen_move (const GamePlayer& player);
 		MCTSAI();
+		
+		virtual const std::vector< Move, std::allocator< Move > > gen_move (const GamePlayer& player);
+		void play(vector<Move> moves);
 };
 
 #endif // MCTSAI_H
