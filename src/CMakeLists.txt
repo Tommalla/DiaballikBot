@@ -6,6 +6,8 @@ set (HEADERS
 	botEnums.h
 	CommunicationHandler.h
 	GTPParser.h
+	MCTNode.h
+	MCTSAI.h
 	NullAI.h
 	Singleton.h
 )
@@ -15,6 +17,8 @@ set (SOURCES
 	CommunicationHandler.cpp
 	GTPParser.cpp
 	main.cpp
+	MCTSAI.cpp
+	MCTNode.cpp
 	NullAI.cpp
 )
 

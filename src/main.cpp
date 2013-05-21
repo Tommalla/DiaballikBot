@@ -1,12 +1,12 @@
 /* Tomasz [Tommalla] Zakrzewski,
 MIMUW, 2013 */
-//DiaballikBot v0.1 AKA NullAI
+//DiaballikBot v0.2 AKA MCTSAI
 #include "CommunicationHandler.h"
-#include "NullAI.h"
+#include "MCTSAI.h"
 #include "GTPParser.h"
 
 int main() {
-	NullAI ai;
+	MCTSAI ai;
 	GTPParser::getInstance().setAI(&ai);
 	
 	CommunicationHandler::getInstance().init();	//passing control
