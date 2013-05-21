@@ -3,6 +3,7 @@ All rights reserved */
 
 #include "AI.h"
 #include "CommunicationHandler.h"
+#include "../DiaballikEngine/src/functions.h"
 
 AI::AI() {
 	this->player = NONE;
@@ -23,8 +24,8 @@ void AI::play(vector<Move> moves) {
 	CommunicationHandler::getInstance().printDebug("AI::play");
 	//determining the player
 	if (this->player == NONE)
-		this->player = this->currentGame.getOppositePlayer(
-			this->currentGame.getPlayerFor(this->currentGame.getFieldAt(moves.begin()->from)));
+		this->player = engine::getOppositePlayer(
+			engine::getPlayerFor(this->currentGame.getFieldAt(moves.begin()->from)));
 		
 	for (Move move: moves)
 		this->currentGame.makeMove(move);
