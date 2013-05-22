@@ -17,8 +17,21 @@ void MCTNode::copyToSelf (const MCTNode& v) {
 	this->sons = v.sons;
 }
 
-bool MCTNode::playout (int playQtyLimit) {
-	//TODO recursive method which implements MCTS
+bool MCTNode::playout () {
+	bool res;
+	
+	if (this->isLeaf()) {
+		if (this->playsQty > MCTNode::expansionBorder) {
+			this->expand();
+			res = this->chooseSon()->playout();
+		} else
+			res = this->randomPlayout();
+	} else
+		res = this->chooseSon()->playout();
+	
+	this->playsQty++;
+	this->playsWon += (res) ? 1 : 0;
+	return res;
 }
 
 double MCTNode::evaluate (const MCTNode* son) const {
@@ -72,7 +85,8 @@ bool MCTNode::randomPlayout() {
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
 	MCTNode::expansionBorder = expansionBorder;
 	
-	this->playout(playQtyLimit);
+	while (playQtyLimit--)
+		this->playout();
 	
 	double best = 0.0, tmp;
 	vector<Move> res;

@@ -24,7 +24,7 @@ class MCTNode {
 		static int expansionBorder; 
 		
 		void copyToSelf(const MCTNode& v);
-		bool playout(int playQtyLimit);
+		bool playout();
 		
 		double evaluate(const MCTNode* son) const;
 		MCTNode* chooseSon();
