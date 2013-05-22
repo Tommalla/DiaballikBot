@@ -26,9 +26,11 @@ class MCTNode {
 		static vector<Move> movesMade;	//a stack for expand
 		static int movesAvailable[2];	//movesAvailable for expand
 		//first number is qty of moves, the second of passes
+		static vector<vector<Move> > allMovesAvailable;	//a stack for calculateAvailableMovesFor
 		
 		void copyToSelf(const MCTNode& v);
 		bool playout();
+		void calculateAvailableMovesFor(const Game& tmpGame);
 		
 		double evaluate(const MCTNode* son) const;
 		MCTNode* chooseSon();

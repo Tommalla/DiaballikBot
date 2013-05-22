@@ -10,6 +10,7 @@ unordered_set<string>* MCTNode::gamesHistory = NULL;
 int MCTNode::expansionBorder = 0;
 vector<Move> MCTNode::movesMade;
 int MCTNode::movesAvailable[2] = {2, 1};
+vector<vector<Move> > MCTNode::allMovesAvailable;
 
 void MCTNode::copyToSelf (const MCTNode& v) {
 	this->game = v.game;
@@ -35,6 +36,43 @@ bool MCTNode::playout() {
 	this->playsWon += (res) ? 1 : 0;
 	return res;
 }
+
+void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
+	vector<Point> pawns;
+	vector<Point> destinations;
+	
+	pawns = tmpGame.getPawnsOf(tmpGame.getCurrentPlayer());	//get all pawns of current player
+	
+	for (Point pawn: pawns) {	//try to move every pawn
+		FieldState src = tmpGame.getFieldAt(pawn);
+		
+		for (int i = 0; i < 2; ++i)	//for each pawn, try move or ball pass
+			if (MCTNode::movesAvailable[i] > 0 && ( 
+				(i == 0 && (src == PLAYER_A || src == PLAYER_B)) ||
+				(i == 1 && (src == BALL_A || src == BALL_B)))) {	//try to make a move
+				destinations = tmpGame.getDestinationsFor(pawn);
+			
+				for (Point dst: destinations) {	//for every destination available
+					Game tmp2 = tmpGame;	//generate new game
+					tmp2.makeMove(pawn, dst);	//with that move made
+				
+					MCTNode::movesMade.push_back(Move(pawn, dst));	//add move to queue
+					
+					//proceed with the recursion
+					MCTNode::movesAvailable[i]--;
+					
+					if (MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0)
+						this->expand(tmp2);
+					else 
+						MCTNode::allMovesAvailable.push_back(MCTNode::movesMade);
+					
+					MCTNode::movesAvailable[i]++;
+					MCTNode::movesMade.pop_back();	//remove move from queue
+				}
+			}
+	}
+}
+
 
 double MCTNode::evaluate (const MCTNode* son) const {
 	if (son->playsQty == 0)	//if there had been no playouts from this son
@@ -120,6 +158,26 @@ void MCTNode::expand(const Game& tmpGame) {
 
 bool MCTNode::randomPlayout() {
 	//TODO implement playout
+	Game current = this->game;
+	
+	while (!current.isFinished() && MCTNode::gamesHistory->find(current.getHash()) == MCTNode::gamesHistory->end()) {
+		MCTNode::allMovesAvailable.clear();
+		this->calculateAvailableMovesFor(current);	//calculating all available moves
+		
+		int choice = rand() % MCTNode::allMovesAvailable.size();	//randomly choosing one
+		for (Move move : MCTNode::allMovesAvailable[choice])	//making the move
+			if (current.isFinished())
+				break;
+			else
+				current.makeMove(move);
+			
+		current.finishMove();
+	}
+	
+	if (current.isFinished())
+		return current.getWinner() == this->game.getCurrentPlayer();
+	
+	return false;	//FIXME draw, need to fix this
 }
 
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
