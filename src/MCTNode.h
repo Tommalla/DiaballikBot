@@ -23,8 +23,9 @@ class MCTNode {
 		static unordered_set<string>* gamesHistory;
 		static int expansionBorder;
 		
-		vector<Move> movesMade;	//a stack for expand
-		int movesAvailable[2] = {2, 1};
+		static vector<Move> movesMade;	//a stack for expand
+		static int movesAvailable[2];	//movesAvailable for expand
+		//first number is qty of moves, the second of passes
 		
 		void copyToSelf(const MCTNode& v);
 		bool playout();

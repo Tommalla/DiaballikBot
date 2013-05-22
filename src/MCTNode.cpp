@@ -8,6 +8,8 @@ All rights reserved */
 
 unordered_set<string>* MCTNode::gamesHistory = NULL;
 int MCTNode::expansionBorder = 0;
+vector<Move> MCTNode::movesMade;
+int MCTNode::movesAvailable[2] = {2, 1};
 
 void MCTNode::copyToSelf (const MCTNode& v) {
 	this->game = v.game;
@@ -86,7 +88,7 @@ void MCTNode::expand(const Game& tmpGame) {
 		FieldState src = tmpGame.getFieldAt(pawn);
 		
 		for (int i = 0; i < 2; ++i)	//for each pawn, try move or ball pass
-			if (this->movesAvailable[i] > 0 && ( 
+			if (MCTNode::movesAvailable[i] > 0 && ( 
 			(i == 0 && (src == PLAYER_A || src == PLAYER_B)) ||
 			(i == 1 && (src == BALL_A || src == BALL_B)))) {	//try to make a move
 				destinations = tmpGame.getDestinationsFor(pawn);
@@ -99,16 +101,17 @@ void MCTNode::expand(const Game& tmpGame) {
 					
 					if (this->sonsGameHashes.find(h) == this->sonsGameHashes.end()) {	//this hash is not present
 						this->sonsGameHashes.insert(h);
-						this->movesMade.push_back(Move(pawn, dst));	//add move to queue
+						MCTNode::movesMade.push_back(Move(pawn, dst));	//add move to queue
 						
-						this->sons.push_back(make_pair(movesMade, new MCTNode(tmp2, !this->isMax)));	//add node
+						this->sons.push_back(make_pair(MCTNode::movesMade, 
+									       new MCTNode(tmp2, !this->isMax)));	//add node
 						
 						//proceed with the recursion
-						this->movesAvailable[i]--;
-						if (this->movesAvailable[0] > 0 || this->movesAvailable[1] > 0)
+						MCTNode::movesAvailable[i]--;
+						if (MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0)
 							this->expand(tmp2);
-						this->movesAvailable[i]++;
-						movesMade.pop_back();	//remove move from queue
+						MCTNode::movesAvailable[i]++;
+						MCTNode::movesMade.pop_back();	//remove move from queue
 					}
 				}
 			}
