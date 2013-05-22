@@ -24,9 +24,10 @@ class MCTNode {
 		static int expansionBorder; 
 		
 		void copyToSelf(const MCTNode& v);
-		bool play(int playQtyLimit);
+		bool playout(int playQtyLimit);
 		
 		double evaluate(const MCTNode* son) const;
+		MCTNode* chooseSon();
 	public:
 		MCTNode(const Game &game, bool isMax = true, unordered_set<string>* gamesHistory = MCTNode::gamesHistory);
 		MCTNode(const MCTNode& v);
@@ -46,7 +47,7 @@ class MCTNode {
 		 * It implements the standard MCTS algorithm with UCB1
 		 * @return True if the playout was won by the player doing the first move
 		 **/
-		bool playout();
+		bool randomPlayout();
 		
 		const vector<Move> getBestMoves(int playQtyLimit, const int expansionBorder);
 		/**
@@ -55,9 +56,6 @@ class MCTNode {
 		 * @return the pointer to the son being deleted
 		 **/
 		MCTNode* forgetSon(const Game& sonGame);
-		
-		const int getWins() const;
-		const int getPlayoutsQty() const;
 		
 		MCTNode& operator=(const MCTNode& v);
 		~MCTNode();

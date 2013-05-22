@@ -13,8 +13,16 @@ void MCTNode::copyToSelf (const MCTNode& v) {
 	this->sons = v.sons;
 }
 
-bool MCTNode::play (int playQtyLimit) {
+bool MCTNode::playout (int playQtyLimit) {
 	//TODO recursive method which implements MCTS
+}
+
+double MCTNode::evaluate (const MCTNode* son) const {
+	//TODO implement evaluating function
+}
+
+MCTNode* MCTNode::chooseSon() {
+	//TODO implement choosing son based on the evaluating function
 }
 
 
@@ -38,19 +46,17 @@ void MCTNode::expand() {
 	//TODO implement expanding
 }
 
-bool MCTNode::playout() {
+bool MCTNode::randomPlayout() {
 	//TODO implement playout
 }
 
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
-
 	//TODO iterate through sons members and choose the best 
 }
 
 MCTNode* MCTNode::forgetSon (const Game& sonGame) {
 	//TODO implement
 }
-
 
 MCTNode& MCTNode::operator= (const MCTNode& v) {
 	this->copyToSelf(v);
