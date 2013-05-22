@@ -15,6 +15,9 @@ const vector< Move > AI::gen_move(const GamePlayer& player) {
 	if (this->player == NONE)
 		this->player = player;//GAME_PLAYER_A; //this->currentGame.getOppositePlayer(this->currentGame.getCurrentPlayer());
 	
+	if (this->currentGame.getCurrentPlayer() == NONE)
+		this->currentGame.setCurrentPlayer(player);
+	
 	//The rest in the derived class
 	return vector<Move>();
 }

@@ -40,7 +40,6 @@ bool MCTNode::playout() {
 }
 
 void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
-	//FIXME needs to be debugged (no moves produced)
 	CommunicationHandler::getInstance().printDebug("MCTNode::calculateAvailableMovesFor(...)");
 	vector<Point> pawns;
 	vector<Point> destinations;
@@ -64,11 +63,11 @@ void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
 					
 					//proceed with the recursion
 					MCTNode::movesAvailable[i]--;
+					MCTNode::allMovesAvailable.push_back(MCTNode::movesMade);
 					
-					if (MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0)
-						this->expand(tmp2);
-					else 
-						MCTNode::allMovesAvailable.push_back(MCTNode::movesMade);
+					if ((MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0) &&
+						!tmp2.isFinished())
+						this->calculateAvailableMovesFor(tmp2);
 					
 					MCTNode::movesAvailable[i]++;
 					MCTNode::movesMade.pop_back();	//remove move from queue
@@ -143,6 +142,8 @@ void MCTNode::expand(const Game& tmpGame) {
 				for (Point dst: destinations) {	//for every destination available
 					Game tmp2 = tmpGame;	//generate new game
 					tmp2.makeMove(pawn, dst);	//with that move made
+					tmp2.finishMove();
+					CommunicationHandler::getInstance().printDebug(tmp2.toString());
 					
 					size_t h = hash<string>()(tmp2.getHash());
 					
@@ -168,12 +169,18 @@ void MCTNode::expand(const Game& tmpGame) {
 bool MCTNode::randomPlayout() {
 	CommunicationHandler::getInstance().printDebug("MCTNode::randomPlayout()");
 	Game current = this->game;
+	unordered_set<string> tempHistory = *MCTNode::gamesHistory;
 	
-	while (!current.isFinished() && MCTNode::gamesHistory->find(current.getHash()) == MCTNode::gamesHistory->end()) {
+	while (!current.isFinished() && tempHistory.find(current.getHash()) == tempHistory.end()) {
+		tempHistory.insert(current.getHash());
 		MCTNode::allMovesAvailable.clear();
+		CommunicationHandler::getInstance().printDebug(current.toString());
+		assert(!current.isFinished());
 		this->calculateAvailableMovesFor(current);	//calculating all available moves
 		
-		assert(MCTNode::allMovesAvailable.empty() == 0);
+		printf("dupa\n");
+		assert(MCTNode::allMovesAvailable.empty() == false);
+		printf("WTF?!\n");
 		
 		int choice = rand() % MCTNode::allMovesAvailable.size();	//randomly choosing one
 		for (Move move : MCTNode::allMovesAvailable[choice])	//making the move
