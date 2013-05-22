@@ -21,7 +21,10 @@ class MCTNode {
 		bool isMax;
 		
 		static unordered_set<string>* gamesHistory;
-		static int expansionBorder; 
+		static int expansionBorder;
+		
+		vector<Move> movesMade;	//a stack for expand
+		int movesAvailable[2] = {2, 1};
 		
 		void copyToSelf(const MCTNode& v);
 		bool playout();
@@ -41,7 +44,7 @@ class MCTNode {
 		 * This method creates all possible sons for the node.
 		 * Bear in mind that it's use is *VERY* expensive, both time and memory-wise.
 		 **/
-		void expand();
+		void expand(const Game& tmpGame);
 		/**
 		 * @brief Performs a playout starting from this node.
 		 * It implements the standard MCTS algorithm with UCB1

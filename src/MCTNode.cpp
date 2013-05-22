@@ -17,12 +17,12 @@ void MCTNode::copyToSelf (const MCTNode& v) {
 	this->sons = v.sons;
 }
 
-bool MCTNode::playout () {
+bool MCTNode::playout() {
 	bool res;
 	
 	if (this->isLeaf()) {
 		if (this->playsQty > MCTNode::expansionBorder) {
-			this->expand();
+			this->expand(this->game);
 			res = this->chooseSon()->playout();
 		} else
 			res = this->randomPlayout();
@@ -74,8 +74,45 @@ const bool MCTNode::isLeaf() const {
 	return this->sons.empty();
 }
 
-void MCTNode::expand() {
-	//TODO implement expanding
+void MCTNode::expand(const Game& tmpGame) {
+	assert(!this->game.isFinished());
+	
+	vector<Point> pawns;
+	vector<Point> destinations;
+	
+	pawns = tmpGame.getPawnsOf(tmpGame.getCurrentPlayer());	//get all pawns of current player
+			
+	for (Point pawn: pawns) {	//try to move every pawn
+		FieldState src = tmpGame.getFieldAt(pawn);
+		
+		for (int i = 0; i < 2; ++i)	//for each pawn, try move or ball pass
+			if (this->movesAvailable[i] > 0 && ( 
+			(i == 0 && (src == PLAYER_A || src == PLAYER_B)) ||
+			(i == 1 && (src == BALL_A || src == BALL_B)))) {	//try to make a move
+				destinations = tmpGame.getDestinationsFor(pawn);
+			
+				for (Point dst: destinations) {	//for every destination available
+					Game tmp2 = tmpGame;	//generate new game
+					tmp2.makeMove(pawn, dst);	//with that move made
+					
+					size_t h = hash<string>()(tmp2.getHash());
+					
+					if (this->sonsGameHashes.find(h) == this->sonsGameHashes.end()) {	//this hash is not present
+						this->sonsGameHashes.insert(h);
+						this->movesMade.push_back(Move(pawn, dst));	//add move to queue
+						
+						this->sons.push_back(make_pair(movesMade, new MCTNode(tmp2, !this->isMax)));	//add node
+						
+						//proceed with the recursion
+						this->movesAvailable[i]--;
+						if (this->movesAvailable[0] > 0 || this->movesAvailable[1] > 0)
+							this->expand(tmp2);
+						this->movesAvailable[i]++;
+						movesMade.pop_back();	//remove move from queue
+					}
+				}
+			}
+	}
 }
 
 bool MCTNode::randomPlayout() {

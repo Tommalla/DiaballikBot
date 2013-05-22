@@ -30,6 +30,8 @@ void AI::play(vector<Move> moves) {
 	for (Move move: moves)
 		this->currentGame.makeMove(move);
 	
+	this->currentGame.finishMove();
+	
 	CommunicationHandler::getInstance().printDebug(this->currentGame.toString());
 	return;
 }
