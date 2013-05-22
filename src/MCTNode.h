@@ -29,9 +29,13 @@ class MCTNode {
 		int playsWon, playsQty;
 		bool isMax;
 		
+		static unordered_set<string>* gamesHistory;
+		static int expansionBorder; 
+		
 		void copyToSelf(const MCTNode& v);
+		bool play(int playQtyLimit);
 	public:
-		MCTNode(const Game &game, const bool isMax = true);
+		MCTNode(const Game &game, bool isMax = true, unordered_set<string>* gamesHistory = MCTNode::gamesHistory);
 		MCTNode(const MCTNode& v);
 		
 		/**
@@ -50,6 +54,14 @@ class MCTNode {
 		 * @return True if the playout was won by the player doing the first move
 		 **/
 		bool playout();
+		
+		const vector<Move> getBestMoves(int playQtyLimit, const int expansionBorder);
+		/**
+		 * @brief Removes the entry from sons representing sonGame
+		 * @param sonGame Game state for which the son will be removed
+		 * @return the pointer to the son being deleted
+		 **/
+		MCTNode* forgetSon(const Game& sonGame);
 		
 		MCTNode& operator=(const MCTNode& v);
 		~MCTNode();

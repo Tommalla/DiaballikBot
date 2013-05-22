@@ -3,6 +3,8 @@ All rights reserved */
 
 #include "MCTNode.h"
 
+unordered_set<string>* MCTNode::gamesHistory = NULL;
+
 void MCTNode::copyToSelf (const MCTNode& v) {
 	this->game = v.game;
 	this->isMax = v.isMax;
@@ -11,12 +13,17 @@ void MCTNode::copyToSelf (const MCTNode& v) {
 	this->sons = v.sons;
 }
 
+bool MCTNode::play (int playQtyLimit) {
+	//TODO recursive method which implements MCTS
+}
 
-MCTNode::MCTNode (const Game& game, const bool isMax) {
+
+MCTNode::MCTNode (const Game& game, bool isMax, unordered_set<string>* gamesHistory) {
 	this->isMax = isMax;
 	this->game = game;
 	this->playsQty = 0;
 	this->playsWon = 0;
+	MCTNode::gamesHistory = gamesHistory;
 }
 
 MCTNode::MCTNode (const MCTNode& v) {
@@ -34,6 +41,16 @@ void MCTNode::expand() {
 bool MCTNode::playout() {
 	//TODO implement playout
 }
+
+const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
+
+	//TODO iterate through sons members and choose the best 
+}
+
+MCTNode* MCTNode::forgetSon (const Game& sonGame) {
+	//TODO implement
+}
+
 
 MCTNode& MCTNode::operator= (const MCTNode& v) {
 	this->copyToSelf(v);
