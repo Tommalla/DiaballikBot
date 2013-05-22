@@ -4,8 +4,11 @@ All rights reserved */
 #ifndef MCTSAI_H
 #define MCTSAI_H
 
+#include <unordered_set>
 #include "AI.h"
 #include "MCTNode.h"
+
+using namespace std;
 
 /**
  * @brief A Monte Carlo Tree Search based AI to play Diaballik
@@ -13,6 +16,7 @@ All rights reserved */
 class MCTSAI : public AI {
 	private:
 		MCTNode* MCTRoot;
+		unordered_set<string> gamesHistory;
 	public:
 		MCTSAI();
 		
