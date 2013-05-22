@@ -2,6 +2,7 @@
 #define BOTCONTANTS_H
 
 const int BUFFER_SIZE = 30;
+const int INF = 999999;
 
 //MCTSAI:
 const int gamesQtyMultiplier = 2;

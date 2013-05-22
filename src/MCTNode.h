@@ -4,28 +4,19 @@ All rights reserved */
 #ifndef MCTNODE_H
 #define MCTNODE_H
 #include <unordered_set>
+#include <set>
 #include "../DiaballikEngine/src/Game.h"
 
 using namespace std;
-
-//the following hash parametrization is very HACK-ish
-class MCTNode;
-
-namespace std {
-	template<>
-	struct hash<pair<vector<Move>, MCTNode*> > {
-		inline std::size_t operator()(const pair<vector<Move>, MCTNode*>& key) const;
-	};
-}
 
 /**
  * @brief Monte Carlo Tree Node
  **/
 class MCTNode {
-	
 	private:
 		Game game;
-		unordered_set<pair<vector<Move>, MCTNode*> > sons;
+		set<size_t> sonsGameHashes;
+		vector<pair<vector<Move>, MCTNode*> > sons;
 		int playsWon, playsQty;
 		bool isMax;
 		
@@ -34,6 +25,8 @@ class MCTNode {
 		
 		void copyToSelf(const MCTNode& v);
 		bool play(int playQtyLimit);
+		
+		double evaluate(const MCTNode* son) const;
 	public:
 		MCTNode(const Game &game, bool isMax = true, unordered_set<string>* gamesHistory = MCTNode::gamesHistory);
 		MCTNode(const MCTNode& v);
@@ -63,16 +56,14 @@ class MCTNode {
 		 **/
 		MCTNode* forgetSon(const Game& sonGame);
 		
+		const int getWins() const;
+		const int getPlayoutsQty() const;
+		
 		MCTNode& operator=(const MCTNode& v);
 		~MCTNode();
 		
 		const string getHash() const;
 };
 
-namespace std {
-	inline std::size_t hash<pair<vector<Move>, MCTNode*> >::operator()(const pair< vector< Move >, MCTNode* >& key) const {
-			return hash<string>()(key.second->getHash());
-	}
-}
 
 #endif // MCTNODE_H
