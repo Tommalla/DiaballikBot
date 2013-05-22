@@ -5,6 +5,7 @@ All rights reserved */
 #include <cmath>
 #include "MCTNode.h"
 #include "botConstants.h"
+#include "CommunicationHandler.h"
 
 unordered_set<string>* MCTNode::gamesHistory = NULL;
 int MCTNode::expansionBorder = 0;
@@ -21,6 +22,7 @@ void MCTNode::copyToSelf (const MCTNode& v) {
 }
 
 bool MCTNode::playout() {
+	CommunicationHandler::getInstance().printDebug("MCTNode::playout()");
 	bool res;
 	
 	if (this->isLeaf()) {
@@ -38,6 +40,8 @@ bool MCTNode::playout() {
 }
 
 void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
+	//FIXME needs to be debugged (no moves produced)
+	CommunicationHandler::getInstance().printDebug("MCTNode::calculateAvailableMovesFor(...)");
 	vector<Point> pawns;
 	vector<Point> destinations;
 	
@@ -75,6 +79,7 @@ void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
 
 
 double MCTNode::evaluate (const MCTNode* son) const {
+	CommunicationHandler::getInstance().printDebug("MCTNode::evaluate");
 	if (son->playsQty == 0)	//if there had been no playouts from this son
 		return INF;	//we have to pick it
 	
@@ -83,6 +88,7 @@ double MCTNode::evaluate (const MCTNode* son) const {
 }
 
 MCTNode* MCTNode::chooseSon() {
+	CommunicationHandler::getInstance().printDebug("MCTNode::chooseSon");
 	double bestEval = 0.0;
 	MCTNode* res = NULL;
 	
@@ -104,6 +110,7 @@ MCTNode::MCTNode (const Game& game, bool isMax, unordered_set<string>* gamesHist
 	this->playsQty = 0;
 	this->playsWon = 0;
 	MCTNode::gamesHistory = gamesHistory;
+	this->sons.clear();
 }
 
 MCTNode::MCTNode (const MCTNode& v) {
@@ -111,10 +118,12 @@ MCTNode::MCTNode (const MCTNode& v) {
 }
 
 const bool MCTNode::isLeaf() const {
+	CommunicationHandler::getInstance().printDebug("MCTNode::isLeaf()");
 	return this->sons.empty();
 }
 
 void MCTNode::expand(const Game& tmpGame) {
+	CommunicationHandler::getInstance().printDebug("MCTNode::expand(...)");
 	assert(!this->game.isFinished());
 	
 	vector<Point> pawns;
@@ -157,12 +166,14 @@ void MCTNode::expand(const Game& tmpGame) {
 }
 
 bool MCTNode::randomPlayout() {
-	//TODO implement playout
+	CommunicationHandler::getInstance().printDebug("MCTNode::randomPlayout()");
 	Game current = this->game;
 	
 	while (!current.isFinished() && MCTNode::gamesHistory->find(current.getHash()) == MCTNode::gamesHistory->end()) {
 		MCTNode::allMovesAvailable.clear();
 		this->calculateAvailableMovesFor(current);	//calculating all available moves
+		
+		assert(MCTNode::allMovesAvailable.empty() == 0);
 		
 		int choice = rand() % MCTNode::allMovesAvailable.size();	//randomly choosing one
 		for (Move move : MCTNode::allMovesAvailable[choice])	//making the move
@@ -181,6 +192,7 @@ bool MCTNode::randomPlayout() {
 }
 
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
+	CommunicationHandler::getInstance().printDebug("MCTNode::getBestMoves(...)");
 	MCTNode::expansionBorder = expansionBorder;
 	
 	while (playQtyLimit--)
@@ -202,6 +214,7 @@ const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansio
 }
 
 MCTNode* MCTNode::forgetSon (const Game& sonGame) {
+	CommunicationHandler::getInstance().printDebug("MCTNode::forgetSon(...)");
 	for (pair<vector<Move>, MCTNode*> son: this->sons)
 		if (son.second->getHash() == sonGame.getHash()) {
 			MCTNode* tmp = son.second;
