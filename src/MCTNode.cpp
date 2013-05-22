@@ -98,6 +98,7 @@ MCTNode* MCTNode::chooseSon() {
 			res = son.second;
 		}
 	}
+	printf("Chose: %lf\n", bestEval);
 	
 	return res;
 }
@@ -227,10 +228,10 @@ const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansio
 
 MCTNode* MCTNode::forgetSon (const Game& sonGame) {
 	CommunicationHandler::getInstance().printDebug("MCTNode::forgetSon(...)");
-	for (pair<vector<Move>, MCTNode*> son: this->sons)
-		if (son.second->getHash() == sonGame.getHash()) {
-			MCTNode* tmp = son.second;
-			son.second = NULL;
+	for (int i = 0; i < this->sons.size(); ++i)
+		if (this->sons[i].second->getHash() == sonGame.getHash()) {
+			MCTNode* tmp = this->sons[i].second;
+			this->sons[i].second = NULL;
 			return tmp;	//NOTICE: no cleanup since the 
 			//method is used right before deletion of the rest of the tree
 		}
