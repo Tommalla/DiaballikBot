@@ -19,7 +19,7 @@ class AI {
 	public:
 		AI();
 		virtual const vector<Move> gen_move(const GamePlayer& player);
-		void play(vector<Move> moves);
+		virtual void play(vector<Move> moves);
 };
 
 #endif // AI_H

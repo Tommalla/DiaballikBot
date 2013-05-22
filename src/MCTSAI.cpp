@@ -4,6 +4,7 @@ All rights reserved */
 #include <ctime>
 #include "MCTSAI.h"
 #include "botConstants.h"
+#include "CommunicationHandler.h"
 
 MCTSAI::MCTSAI() {
 	srand(time(NULL));
@@ -29,7 +30,8 @@ void MCTSAI::play (vector< Move > moves) {
 		delete this->MCTRoot;
 		
 		this->MCTRoot = newRoot;
-	}
+	} else
+		CommunicationHandler::getInstance().printDebug("MCTRoot is NULL! :O");
 }
 
 

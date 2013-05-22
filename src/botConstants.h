@@ -10,7 +10,7 @@ const int winPoints = 2;
 const int drawPoints = 1;
 const int losePoints = 0;
 
-const int initialPlayoutsLimit = 100;	//quantity of playouts for the whole tree at the beginning
+const int initialPlayoutsLimit = 20;	//quantity of playouts for the whole tree at the beginning
 const int initialExpansionBorder = 3;
 
 #endif

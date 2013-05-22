@@ -36,11 +36,11 @@ bool MCTNode::playout() {
 	
 	this->playsQty++;
 	this->playsWon += (res) ? 1 : 0;
-	return res;
+	return !res;
 }
 
 void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
-	CommunicationHandler::getInstance().printDebug("MCTNode::calculateAvailableMovesFor(...)");
+	//CommunicationHandler::getInstance().printDebug("MCTNode::calculateAvailableMovesFor(...)");
 	vector<Point> pawns;
 	vector<Point> destinations;
 	
@@ -78,9 +78,9 @@ void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
 
 
 double MCTNode::evaluate (const MCTNode* son) const {
-	CommunicationHandler::getInstance().printDebug("MCTNode::evaluate");
+	//CommunicationHandler::getInstance().printDebug("MCTNode::evaluate");
 	if (son->playsQty == 0)	//if there had been no playouts from this son
-		return INF;	//we have to pick it
+		return ( (son->isMax) ? 1 : (-1)) * INF;	//we have to pick it
 	
 	return double(son->playsWon) / son->playsQty + ( (son->isMax) ? 1 : (-1)) *
 	sqrt( log(this->playsQty) / son->playsQty);
@@ -93,7 +93,7 @@ MCTNode* MCTNode::chooseSon() {
 	
 	for(pair<vector<Move>, MCTNode*> son : this->sons) {
 		double eval = this->evaluate(son.second);
-		if (bestEval < eval || res == NULL) {
+		if ( ((this->isMax) ? bestEval < eval : bestEval > eval) || res == NULL) {
 			bestEval = eval;
 			res = son.second;
 		}
@@ -154,6 +154,8 @@ void MCTNode::expand(const Game& tmpGame) {
 						this->sons.push_back(make_pair(MCTNode::movesMade, 
 									       new MCTNode(tmp2, !this->isMax)));	//add node
 						
+						tmp2.finishMove();
+						
 						//proceed with the recursion
 						MCTNode::movesAvailable[i]--;
 						if (MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0)
@@ -174,13 +176,11 @@ bool MCTNode::randomPlayout() {
 	while (!current.isFinished() && tempHistory.find(current.getHash()) == tempHistory.end()) {
 		tempHistory.insert(current.getHash());
 		MCTNode::allMovesAvailable.clear();
-		CommunicationHandler::getInstance().printDebug(current.toString());
-		assert(!current.isFinished());
+		//CommunicationHandler::getInstance().printDebug(current.toString());
+		//assert(!current.isFinished());
 		this->calculateAvailableMovesFor(current);	//calculating all available moves
 		
-		printf("dupa\n");
 		assert(MCTNode::allMovesAvailable.empty() == false);
-		printf("WTF?!\n");
 		
 		int choice = rand() % MCTNode::allMovesAvailable.size();	//randomly choosing one
 		for (Move move : MCTNode::allMovesAvailable[choice])	//making the move
@@ -201,6 +201,11 @@ bool MCTNode::randomPlayout() {
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
 	CommunicationHandler::getInstance().printDebug("MCTNode::getBestMoves(...)");
 	MCTNode::expansionBorder = expansionBorder;
+	
+	if (this->isLeaf() == true) {
+		this->expand(this->game);
+		printf("Total sons: %d\n", this->sons.size());
+	}
 	
 	while (playQtyLimit--)
 		this->playout();
