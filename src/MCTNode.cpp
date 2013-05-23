@@ -40,6 +40,7 @@ int MCTNode::playout() {
 			fprintf(stderr, "Expanding...\n");
 			#endif
 			this->expand(this->game);
+			assert(this->sons.empty() == false);
 			res = this->chooseSon()->playout();
 		} else
 			res = this->randomPlayout();
@@ -239,7 +240,7 @@ void MCTNode::generateRandomMove (Game tmpGame, int depthLeft) {
 
 	}
 	
-	if (depthLeft > 0)
+	if (tmpGame.isFinished() == false && depthLeft > 0)
 		this->generateRandomMove(tmpGame, depthLeft);
 	
 	if (moveMade) {
@@ -279,6 +280,7 @@ void MCTNode::expand(const Game& tmpGame) {
 	vector<Point> destinations;
 	
 	pawns = tmpGame.getPawnsOf(tmpGame.getCurrentPlayer());	//get all pawns of current player
+	assert(pawns.empty() == false);
 			
 	for (Point pawn: pawns) {	//try to move every pawn
 		FieldState src = tmpGame.getFieldAt(pawn);
@@ -296,9 +298,16 @@ void MCTNode::expand(const Game& tmpGame) {
 					assert(tmp2.getCurrentPlayer() != tmpGame.getCurrentPlayer());
 					
 					//FIXME possible crash?
-					if (!tmp2.isFinished() && this->canWinInOneTurn(tmp2, tmp2.getCurrentPlayer()))
-						continue;	//we don't want obviously losing states
-					
+// 					if (!tmp2.isFinished() && this->canWinInOneTurn(tmp2, tmp2.getCurrentPlayer())) {
+// 						#ifndef NDEBUG
+// 						fprintf(stderr, "Expand state abandoned!\n");
+// 						#endif
+// 						continue;	//we don't want obviously losing states
+// 					} 
+// 					#ifndef NDEBUG
+// 					else
+// 						fprintf(stderr, "NOT abandoned!\n");
+// 					#endif
 					//CommunicationHandler::getInstance().printDebug(tmp2.toString());
 					
 					size_t h = hash<string>()(tmp2.getHash());
@@ -322,6 +331,7 @@ void MCTNode::expand(const Game& tmpGame) {
 				}
 			}
 	}
+	
 	this->leaf = false;
 }
 
