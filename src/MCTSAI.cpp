@@ -15,7 +15,7 @@ const std::vector< Move, std::allocator< Move > > MCTSAI::gen_move (const GamePl
 	vector<Move> res = AI::gen_move (player);
 	
 	if (this->MCTRoot == NULL)	//not initialized yet
-		this->MCTRoot = new MCTNode(this->currentGame, true, &this->gamesHistory);	//a max node starting at current state
+		this->MCTRoot = new MCTNode(this->currentGame, true, this->currentGame.getCurrentPlayer(), &this->gamesHistory);	//a max node starting at current state
 	
 	return this->MCTRoot->getBestMoves(initialPlayoutsLimit, initialExpansionBorder);
 }

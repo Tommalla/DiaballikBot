@@ -12,6 +12,7 @@ int MCTNode::expansionBorder = 0;
 vector<Move> MCTNode::movesMade;
 int MCTNode::movesAvailable[2] = {2, 1};
 vector<vector<Move> > MCTNode::allMovesAvailable;
+GamePlayer MCTNode::desiredWinner = NONE;
 
 void MCTNode::copyToSelf (const MCTNode& v) {
 	this->game = v.game;
@@ -36,7 +37,7 @@ bool MCTNode::playout() {
 	
 	this->playsQty++;
 	this->playsWon += (res) ? 1 : 0;
-	return !res;
+	return res;
 }
 
 void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
@@ -80,9 +81,14 @@ void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
 double MCTNode::evaluate (const MCTNode* son) const {
 	//CommunicationHandler::getInstance().printDebug("MCTNode::evaluate");
 	if (son->playsQty == 0)	//if there had been no playouts from this son
-		return ( (son->isMax) ? 1 : (-1)) * INF;	//we have to pick it
+		return ( (this->isMax) ? 1 : (-1)) * INF;	//we have to pick it
 	
-	return double(son->playsWon) / son->playsQty + ( (son->isMax) ? 1 : (-1)) *
+	#ifndef NDEBUG
+	printf("Eval for some node: %lf\n", double(son->playsWon) / son->playsQty + ( (this->isMax) ? 1 : (-1)) *
+	sqrt( log(this->playsQty) / son->playsQty));
+	#endif
+	
+	return double(son->playsWon) / son->playsQty + ( (this->isMax) ? 1 : (-1)) *
 	sqrt( log(this->playsQty) / son->playsQty);
 }
 
@@ -98,17 +104,21 @@ MCTNode* MCTNode::chooseSon() {
 			res = son.second;
 		}
 	}
+	#ifndef NDEBUG
 	printf("Chose: %lf\n", bestEval);
+	#endif
+	assert(res != NULL);
 	
 	return res;
 }
 
 
-MCTNode::MCTNode (const Game& game, bool isMax, unordered_set<string>* gamesHistory) {
+MCTNode::MCTNode (const Game& game, bool isMax, GamePlayer desiredWinner, unordered_set<string>* gamesHistory) {
 	this->isMax = isMax;
 	this->game = game;
 	this->playsQty = 0;
 	this->playsWon = 0;
+	MCTNode::desiredWinner = desiredWinner;
 	MCTNode::gamesHistory = gamesHistory;
 	this->sons.clear();
 }
@@ -194,7 +204,7 @@ bool MCTNode::randomPlayout() {
 	}
 	
 	if (current.isFinished())
-		return current.getWinner() == this->game.getCurrentPlayer();
+		return current.getWinner() == MCTNode::desiredWinner;
 	
 	return false;	//FIXME draw, need to fix this
 }
@@ -205,7 +215,9 @@ const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansio
 	
 	if (this->isLeaf() == true) {
 		this->expand(this->game);
+		#ifndef NDEBUG
 		printf("Total sons: %d\n", this->sons.size());
+		#endif
 	}
 	
 	while (playQtyLimit--)
@@ -216,12 +228,15 @@ const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansio
 	for (pair<vector<Move>, MCTNode*> son : this->sons)
 		if (son.second->playsQty != 0) {
 			tmp = (double)son.second->playsWon / son.second->playsQty;
-			if (best < tmp) {
+			if (tmp > best || res.empty()) {
 				best = tmp;
 				res = son.first;
 			}
 		}
-		
+	
+	#ifndef NDEBUG
+	printf("Chose the son of result %lf\n", best);
+	#endif
 	assert(res.empty() == false);
 	return res;
 }
@@ -236,7 +251,7 @@ MCTNode* MCTNode::forgetSon (const Game& sonGame) {
 			//method is used right before deletion of the rest of the tree
 		}
 		
-	assert(false);
+	//if controll reached this moment, it means we have no nodes for the state we're going to
 	return NULL;	//should never happen
 }
 

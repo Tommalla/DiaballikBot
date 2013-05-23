@@ -27,6 +27,7 @@ class MCTNode {
 		static int movesAvailable[2];	//movesAvailable for expand
 		//first number is qty of moves, the second of passes
 		static vector<vector<Move> > allMovesAvailable;	//a stack for calculateAvailableMovesFor
+		static GamePlayer desiredWinner;	//us
 		
 		void copyToSelf(const MCTNode& v);
 		bool playout();
@@ -35,7 +36,8 @@ class MCTNode {
 		double evaluate(const MCTNode* son) const;
 		MCTNode* chooseSon();
 	public:
-		MCTNode(const Game &game, bool isMax = true, unordered_set<string>* gamesHistory = MCTNode::gamesHistory);
+		MCTNode(const Game &game, bool isMax = true, GamePlayer desiredWinner = MCTNode::desiredWinner, 
+			unordered_set<string>* gamesHistory = MCTNode::gamesHistory);
 		MCTNode(const MCTNode& v);
 		
 		/**
