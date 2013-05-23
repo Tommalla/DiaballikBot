@@ -17,6 +17,13 @@ class MCTSAI : public AI {
 	private:
 		MCTNode* MCTRoot;
 		unordered_set<string> gamesHistory;
+		int expansionBorder;
+		int playoutsLimit;
+		
+		/**
+		 * @brief Assigns correct values to control factors like expansionBorder
+		 **/
+		void updateLimits();
 	public:
 		MCTSAI();
 		

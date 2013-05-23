@@ -22,10 +22,10 @@ vector<Move> MCTNode::nextRandomMove;
 int MCTNode::movesAvailable[2] = {2, 1};
 vector<vector<Move> > MCTNode::allMovesAvailable;
 GamePlayer MCTNode::desiredWinner = NONE;
+int MCTNode::trivialWins = 0;
 
 #ifndef NDEBUG
 int expansions = 0;
-int trivialWins = 0;
 int randomPlayouts = 0;
 #endif
 
@@ -98,7 +98,6 @@ void MCTNode::calculateAvailableMovesFor (const Game& tmpGame) {
 }
 
 bool MCTNode::canWinInOneTurn (const Game& tmpGame, const GamePlayer player) {
-	//FIXME: just a stub - notices the obvious things only and is poorly implemented
 	vector<Point> pawns = tmpGame.getPawnsOf(player);
 	Point holder;
 	
@@ -145,52 +144,7 @@ bool MCTNode::canWinInOneTurn (const Game& tmpGame, const GamePlayer player) {
 				
 			}
 		}
-			
-// 			switch(abs(lineY - pawn.y)) {
-// 				case 0:
-// 					if (tmpGame.isMoveValid(holder, pawn))
-// 						return true;
-// 					//TODO try to move the pawn 1-2 fields right/left and then check 
-// 					break;
-// 				case 1:
-// 				{
-// 					//first, try to move the pawn to the line in one move
-// 					Game tmp2 = tmpGame;
-// 					Point pawnDst = pawn + Point(0, lineY - pawn.y);
-// 					if (tmp2.isMoveValid(pawn, pawnDst)) {
-// 						tmp2.makeMove(pawn, pawnDst);
-// 						if (tmp2.isMoveValid(holder, pawnDst))
-// 							return true;
-// 						//TODO: try moving left/right (as in case 0)
-// 						
-// 						tmp2 = tmpGame;
-// 					}
-// 					
-// 					//try left->up/down | right->up/down
-// 					break;
-// 				}
-// 				case 2:
-// 				{
-// 					//really no choice - either going up/down works or not
-// 					Game tmp2 = tmpGame;
-// 					Point pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
-// 					if (tmp2.isMoveValid(pawn, pawnDst)) {
-// 						tmp2.makeMove(pawn, pawnDst);
-// 						pawn = pawnDst;
-// 						pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
-// 						
-// 						if (tmp2.isMoveValid(pawn, pawnDst)) {
-// 							tmp2.makeMove(pawn, pawnDst);
-// 							if (tmp2.isMoveValid(holder, pawnDst))
-// 								return true;
-// 						}
-// 					}
-// 					break;
-// 				}
-// 			}
-// 		}
-	
-	//CommunicationHandler::getInstance().printDebug(tmpGame.toString().c_str());
+
 	return false;	//everything else failed
 }
 
@@ -389,8 +343,8 @@ int MCTNode::randomPlayout() {
 		if (this->canWinInOneTurn(current, current.getCurrentPlayer())) {
 			#ifndef NDEBUG
 			fprintf(stderr, "%s\n", current.toString().c_str());
-			++trivialWins;
 			#endif
+			++trivialWins;
 			return (current.getCurrentPlayer() == MCTNode::desiredWinner) ? winPoints : losePoints;
 		}
 		
@@ -424,8 +378,9 @@ int MCTNode::randomPlayout() {
 }
 
 const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansionBorder) {
+	trivialWins = 0;
 	#ifndef NDEBUG
-	trivialWins = expansions = randomPlayouts = 0;
+	expansions = randomPlayouts = 0;
 	#endif
 	CommunicationHandler::getInstance().printDebug("MCTNode::getBestMoves(...)");
 	MCTNode::expansionBorder = expansionBorder;

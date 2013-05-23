@@ -75,6 +75,8 @@ class MCTNode {
 		 **/
 		MCTNode* forgetSon(const Game& sonGame);
 		
+		static int trivialWins;	//A HACK
+		
 		MCTNode& operator=(const MCTNode& v);
 		~MCTNode();
 		

@@ -1,6 +1,6 @@
 /* Tomasz [Tommalla] Zakrzewski,
 MIMUW, 2013 */
-//DiaballikBot v0.2.3 AKA MCTSAI
+//DiaballikBot v0.2.4 AKA MCTSAI
 #include "CommunicationHandler.h"
 #include "MCTSAI.h"
 #include "GTPParser.h"
