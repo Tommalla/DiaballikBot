@@ -7,6 +7,14 @@ All rights reserved */
 #include "botConstants.h"
 #include "CommunicationHandler.h"
 
+//"relative vectors" used by canWinInOneTurn
+const Point winInOneTurnMoves[3][4][2] = {
+	{{Point(-1, 0), Point(-1, 0)}, {Point(1, 0), Point(1, 0)}, {Point(0, 0), Point(0, 0)}, {Point(0, 0), Point(0, 0)}},	//0 fields away
+	{{Point(-1, 0), Point(0, 1)}, {Point(0, 1), Point(-1, 0)}, {Point(0, 1), Point(1, 0)}, {Point(1, 0), Point(0, 1)}},	//one up, one lr
+	{{Point(0, 1), Point(0, 1)}, {Point(0,0), Point(0, 0)}, {Point(0, 0), Point(0,0)}, {Point(0, 0), Point(0, 0)}}	//2 fields up/down
+};
+const int winInOneTurnLen[3] = {2, 4, 1};
+
 unordered_set<string>* MCTNode::gamesHistory = NULL;
 int MCTNode::expansionBorder = 0;
 vector<Move> MCTNode::movesMade;
@@ -107,50 +115,82 @@ bool MCTNode::canWinInOneTurn (const Game& tmpGame, const GamePlayer player) {
 	for (Point pawn : pawns)
 		if (abs(lineY - pawn.y) <= 2) {	//can possibly reach the line
 			
-			switch(abs(lineY - pawn.y)) {
-				case 0:
-					if (tmpGame.isMoveValid(holder, pawn))
+			#ifndef NDEBUG
+			fprintf(stderr, "%s\n", tmpGame.toString().c_str());
+			#endif
+			int variant = abs(lineY - pawn.y);	//which variant - 2, 1 or 0 field from line
+			
+			for (int i = 0; i < winInOneTurnLen[variant]; ++i) {
+				Game tmp2 = tmpGame;
+				Point tmpPawn = pawn;
+				Point dstPawn, diff;
+				
+				for (int j = 0; j < 2; ++j) {
+					if (tmpPawn.y == lineY && tmp2.isMoveValid(holder, tmpPawn))	//can pass to line
 						return true;
-					//TODO try to move the pawn 1-2 fields right/left and then check 
-					break;
-				case 1:
-				{
-					//first, try to move the pawn to the line in one move
-					Game tmp2 = tmpGame;
-					Point pawnDst = pawn + Point(0, lineY - pawn.y);
-					if (tmp2.isMoveValid(pawn, pawnDst)) {
-						tmp2.makeMove(pawn, pawnDst);
-						if (tmp2.isMoveValid(holder, pawnDst))
-							return true;
-						//TODO: try moving left/right (as in case 0)
-						
-						tmp2 = tmpGame;
-					}
 					
-					//try left->up/down | right->up/down
-					break;
+					diff = winInOneTurnMoves[variant][i][j];
+					diff.y *= ((lineY - pawn.y > 0) ? 1 : -1);
+					dstPawn = tmpPawn + diff;
+					
+					if (tmp2.isMoveValid(tmpPawn, dstPawn)) {
+						tmp2.makeMove(tmpPawn, dstPawn);
+						tmpPawn = dstPawn;
+					} else
+						break;
 				}
-				case 2:
-				{
-					//really no choice - either going up/down works or not
-					Game tmp2 = tmpGame;
-					Point pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
-					if (tmp2.isMoveValid(pawn, pawnDst)) {
-						tmp2.makeMove(pawn, pawnDst);
-						pawn = pawnDst;
-						pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
-						
-						if (tmp2.isMoveValid(pawn, pawnDst)) {
-							tmp2.makeMove(pawn, pawnDst);
-							if (tmp2.isMoveValid(holder, pawnDst))
-								return true;
-						}
-					}
-					break;
-				}
+				
+				if (tmpPawn.y == lineY && tmp2.isMoveValid(holder, tmpPawn))	//can pass to line
+					return true;
+				
 			}
 		}
-		
+			
+// 			switch(abs(lineY - pawn.y)) {
+// 				case 0:
+// 					if (tmpGame.isMoveValid(holder, pawn))
+// 						return true;
+// 					//TODO try to move the pawn 1-2 fields right/left and then check 
+// 					break;
+// 				case 1:
+// 				{
+// 					//first, try to move the pawn to the line in one move
+// 					Game tmp2 = tmpGame;
+// 					Point pawnDst = pawn + Point(0, lineY - pawn.y);
+// 					if (tmp2.isMoveValid(pawn, pawnDst)) {
+// 						tmp2.makeMove(pawn, pawnDst);
+// 						if (tmp2.isMoveValid(holder, pawnDst))
+// 							return true;
+// 						//TODO: try moving left/right (as in case 0)
+// 						
+// 						tmp2 = tmpGame;
+// 					}
+// 					
+// 					//try left->up/down | right->up/down
+// 					break;
+// 				}
+// 				case 2:
+// 				{
+// 					//really no choice - either going up/down works or not
+// 					Game tmp2 = tmpGame;
+// 					Point pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
+// 					if (tmp2.isMoveValid(pawn, pawnDst)) {
+// 						tmp2.makeMove(pawn, pawnDst);
+// 						pawn = pawnDst;
+// 						pawnDst = pawn + Point(0, (lineY > pawn.y) ? 1 : -1);
+// 						
+// 						if (tmp2.isMoveValid(pawn, pawnDst)) {
+// 							tmp2.makeMove(pawn, pawnDst);
+// 							if (tmp2.isMoveValid(holder, pawnDst))
+// 								return true;
+// 						}
+// 					}
+// 					break;
+// 				}
+// 			}
+// 		}
+	
+	//CommunicationHandler::getInstance().printDebug(tmpGame.toString().c_str());
 	return false;	//everything else failed
 }
 
@@ -347,8 +387,8 @@ int MCTNode::randomPlayout() {
 	while (!current.isFinished() && tempHistory.find(current.getHash()) == tempHistory.end()) {
 		//checking for trivial winning
 		if (this->canWinInOneTurn(current, current.getCurrentPlayer())) {
-			//printf("Trivial win!");
 			#ifndef NDEBUG
+			fprintf(stderr, "%s\n", current.toString().c_str());
 			++trivialWins;
 			#endif
 			return (current.getCurrentPlayer() == MCTNode::desiredWinner) ? winPoints : losePoints;
