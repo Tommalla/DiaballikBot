@@ -24,6 +24,7 @@ class MCTNode {
 		static int expansionBorder;
 		
 		static vector<Move> movesMade;	//a stack for expand
+		static vector<Move> nextRandomMove;
 		static int movesAvailable[2];	//movesAvailable for expand
 		//first number is qty of moves, the second of passes
 		static vector<vector<Move> > allMovesAvailable;	//a stack for calculateAvailableMovesFor
@@ -35,6 +36,11 @@ class MCTNode {
 		
 		double evaluate(const MCTNode* son) const;
 		MCTNode* chooseSon();
+		
+		/**
+		 * @brief Generates random move later accessible in nextRandomMove
+		 **/
+		void generateRandomMove(Game tmpGame, int depthLeft);
 	public:
 		MCTNode(const Game &game, bool isMax = true, GamePlayer desiredWinner = MCTNode::desiredWinner, 
 			unordered_set<string>* gamesHistory = MCTNode::gamesHistory);

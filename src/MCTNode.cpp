@@ -10,6 +10,7 @@ All rights reserved */
 unordered_set<string>* MCTNode::gamesHistory = NULL;
 int MCTNode::expansionBorder = 0;
 vector<Move> MCTNode::movesMade;
+vector<Move> MCTNode::nextRandomMove;
 int MCTNode::movesAvailable[2] = {2, 1};
 vector<vector<Move> > MCTNode::allMovesAvailable;
 GamePlayer MCTNode::desiredWinner = NONE;
@@ -112,6 +113,64 @@ MCTNode* MCTNode::chooseSon() {
 	return res;
 }
 
+void MCTNode::generateRandomMove (Game tmpGame, int depthLeft) {
+	//CommunicationHandler::getInstance().printDebug("MCTNode::generateRandomMove(...)");
+	
+	bool moveMade = false;
+	bool ballPass = ((rand() % 2) == 0) && (movesAvailable[1] > 0);
+	
+	{
+		vector<Point> pawns;
+		vector<Point> destinations;
+		pawns = tmpGame.getPawnsOf(tmpGame.getCurrentPlayer());	//get all pawns of current player
+	
+		FieldState src;
+		int pawnId;
+	
+		if (ballPass) {
+			for (pawnId = 0; pawnId < pawns.size(); ++pawnId) {
+				src = tmpGame.getFieldAt(pawns[pawnId]);
+				if (src == BALL_A || src == BALL_B) {
+					destinations = tmpGame.getDestinationsFor(pawns[pawnId]);
+					break;
+				}
+			}
+			
+		} else {	//if it's a move
+			do {
+				pawnId = rand() % pawns.size();
+				src = tmpGame.getFieldAt(pawns[pawnId]);
+			} while (src == BALL_A || src == BALL_B);
+		
+			destinations = tmpGame.getDestinationsFor(pawns[pawnId]);
+		}
+		
+		if (destinations.size() > 0) {
+			int choice = rand() % destinations.size();
+			MCTNode::nextRandomMove.push_back(Move(pawns[pawnId], destinations[choice]));
+			tmpGame.makeMove(MCTNode::nextRandomMove.back());
+			moveMade = true;
+			MCTNode::movesAvailable[(ballPass) ? 1 : 0]--;
+// 			#ifndef NDEBUG
+// 			printf("Chose move: %d %d -> %d %d\n", MCTNode::nextRandomMove.back().from.x, MCTNode::nextRandomMove.back().from.y,
+// 			       MCTNode::nextRandomMove.back().to.x, MCTNode::nextRandomMove.back().to.y);
+// 			#endif
+			depthLeft--;
+		}
+
+	}
+	
+	if (depthLeft > 0)
+		this->generateRandomMove(tmpGame, depthLeft);
+	
+	if (moveMade) {
+		movesAvailable[0] += (ballPass == false) ? 1 : 0;
+		movesAvailable[1] += (ballPass == true) ? 1 : 0;
+	}
+	
+	return;
+}
+
 
 MCTNode::MCTNode (const Game& game, bool isMax, GamePlayer desiredWinner, unordered_set<string>* gamesHistory) {
 	this->isMax = isMax;
@@ -186,15 +245,12 @@ bool MCTNode::randomPlayout() {
 	
 	while (!current.isFinished() && tempHistory.find(current.getHash()) == tempHistory.end()) {
 		tempHistory.insert(current.getHash());
-		MCTNode::allMovesAvailable.clear();
+		MCTNode::nextRandomMove.clear();
 		//CommunicationHandler::getInstance().printDebug(current.toString());
 		//assert(!current.isFinished());
-		this->calculateAvailableMovesFor(current);	//calculating all available moves
+		this->generateRandomMove(current, rand() % 4);	//calculating all available moves
 		
-		assert(MCTNode::allMovesAvailable.empty() == false);
-		
-		int choice = rand() % MCTNode::allMovesAvailable.size();	//randomly choosing one
-		for (Move move : MCTNode::allMovesAvailable[choice])	//making the move
+		for (Move move : MCTNode::nextRandomMove)	//making the move
 			if (current.isFinished())
 				break;
 			else
@@ -203,7 +259,7 @@ bool MCTNode::randomPlayout() {
 		current.finishMove();
 	}
 	
-	if (current.isFinished())
+	if (current.isFinished() && current.getWinner() != NONE)
 		return current.getWinner() == MCTNode::desiredWinner;
 	
 	return false;	//FIXME draw, need to fix this
