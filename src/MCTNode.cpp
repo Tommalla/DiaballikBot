@@ -323,7 +323,8 @@ void MCTNode::expand(const Game& tmpGame) {
 						
 						//proceed with the recursion
 						MCTNode::movesAvailable[i]--;
-						if (MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0)
+						if (tmp2.isFinished() == false && 
+							(MCTNode::movesAvailable[0] > 0 || MCTNode::movesAvailable[1] > 0))
 							this->expand(tmp2);
 						MCTNode::movesAvailable[i]++;
 						MCTNode::movesMade.pop_back();	//remove move from queue
