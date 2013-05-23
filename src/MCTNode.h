@@ -18,7 +18,7 @@ class MCTNode {
 		set<size_t> sonsGameHashes;
 		vector<pair<vector<Move>, MCTNode*> > sons;
 		int playsWon, playsQty;
-		bool isMax;
+		bool isMax, leaf;
 		
 		static unordered_set<string>* gamesHistory;
 		static int expansionBorder;
@@ -31,8 +31,12 @@ class MCTNode {
 		static GamePlayer desiredWinner;	//us
 		
 		void copyToSelf(const MCTNode& v);
-		bool playout();
+		int playout();
 		void calculateAvailableMovesFor(const Game& tmpGame);
+		/**
+		 * @return true if the game can be won by the player in one turn
+		 **/
+		bool canWinInOneTurn(const Game& tmpGame, const GamePlayer player);
 		
 		double evaluate(const MCTNode* son) const;
 		MCTNode* chooseSon();
@@ -61,7 +65,7 @@ class MCTNode {
 		 * It implements the standard MCTS algorithm with UCB1
 		 * @return True if the playout was won by the player doing the first move
 		 **/
-		bool randomPlayout();
+		int randomPlayout();
 		
 		const vector<Move> getBestMoves(int playQtyLimit, const int expansionBorder);
 		/**
