@@ -9,7 +9,8 @@ const string CommunicationHandler::readLine() {
 	static char buffer[BUFFER_SIZE];
 	
 	fgets(buffer, BUFFER_SIZE, stdin);
-	fflush(stdin);
+	fprintf(stderr, "%s", buffer);
+	//fflush(stdin);
 	
 	string res = buffer;
 	res.pop_back();
