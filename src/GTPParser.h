@@ -11,7 +11,7 @@ All rights reserved */
 #include "botEnums.h"
 
 /**
- * @brief A pretty static implementation (time!)
+ * @brief A simple GTP parser
  **/
 class GTPParser : public Singleton<GTPParser> {
 	friend class Singleton;
@@ -22,11 +22,6 @@ class GTPParser : public Singleton<GTPParser> {
 	public:
 		void setAI(AI* ai);
 		const string executeCommand(const string &command);
-		//TODO a namespace ?
-		const vector<string> splitString(const string& str) const;
-		const Move convertToMove(const string from, const string to);
-		const std::pair< const string, const string > convertFromMove(const Move& move);
-		vector< Move > convertToMoves (vector< string >::reference arg);
 };
 
 #endif // GTPPARSER_H
