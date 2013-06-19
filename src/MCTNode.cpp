@@ -101,7 +101,7 @@ bool MCTNode::canWinInOneTurn (const Game& tmpGame, const GamePlayer player) {
 	vector<Point> pawns = tmpGame.getPawnsOf(player);
 	Point holder;
 	
-	for (int i = 0; i < pawns.size(); ++i)
+	for (int i = 0; i < (int)pawns.size(); ++i)
 		if (tmpGame.getFieldAt(pawns[i]) == BALL_A || tmpGame.getFieldAt(pawns[i]) == BALL_B) {
 			holder = pawns[i];
 			swap(pawns[i], pawns[pawns.size() - 1]);
@@ -205,7 +205,7 @@ void MCTNode::generateRandomMove (Game tmpGame, int depthLeft) {
 		int pawnId;
 	
 		if (ballPass) {
-			for (pawnId = 0; pawnId < pawns.size(); ++pawnId) {
+			for (pawnId = 0; pawnId < (int)pawns.size(); ++pawnId) {
 				src = tmpGame.getFieldAt(pawns[pawnId]);
 				if (src == BALL_A || src == BALL_B) {
 					destinations = tmpGame.getDestinationsFor(pawns[pawnId]);
@@ -434,7 +434,7 @@ const vector< Move > MCTNode::getBestMoves (int playQtyLimit, const int expansio
 
 MCTNode* MCTNode::forgetSon (const Game& sonGame) {
 	CommunicationHandler::getInstance().printDebug("MCTNode::forgetSon(...)");
-	for (int i = 0; i < this->sons.size(); ++i)
+	for (int i = 0; i < (int)this->sons.size(); ++i)
 		if (this->sons[i].second->getHash() == sonGame.getHash()) {
 			MCTNode* tmp = this->sons[i].second;
 			this->sons[i].second = NULL;

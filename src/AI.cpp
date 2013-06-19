@@ -42,3 +42,9 @@ void AI::play(vector<Move> moves) {
 void AI::undo_turn (vector< Move > moves) {
 	assert(this->player != NONE);	//caus if so, then there's certainly an error/misuse of the bot
 }
+
+void AI::new_game (const vector< Point > black, const vector< Point > white, const vector< Point > ball, const GamePlayer& player) {
+	this->currentGame.newGame(black, white, ball);
+	this->currentGame.setCurrentPlayer(player);
+}
+

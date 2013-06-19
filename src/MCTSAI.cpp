@@ -76,4 +76,11 @@ void MCTSAI::undo_turn (vector< Move > moves) {
 	this->MCTRoot = NULL;
 }
 
+void MCTSAI::new_game (const vector< Point > black, const vector< Point > white, const vector< Point > ball, const GamePlayer& player) {
+	AI::new_game (black, white, ball, player);
+	delete this->MCTRoot;
+	this->MCTRoot = NULL;
+}
+
+
 

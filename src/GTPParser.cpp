@@ -12,6 +12,7 @@ GTPParser::GTPParser() : Singleton< GTPParser >() {
 	this->commandMap.insert({"play", GTP_PLAY});
 	this->commandMap.insert({"gen_move", GTP_GEN_MOVE});
 	this->commandMap.insert({"undo_turn", GTP_UNDO_TURN});
+	this->commandMap.insert({"new_game", GTP_NEW_GAME});
 }
 
 void GTPParser::setAI(AI* ai) {
@@ -66,6 +67,20 @@ const string GTPParser::executeCommand(const string& command) {
 			
 			this->ai->undo_turn(moves);
 			break;
+		case GTP_NEW_GAME:
+		{
+			vector<Point> black, white, balls = engine::convertToPoints(args[2]), 
+				tmp = engine::convertToPoints(args[1]);
+			int i;
+			for (i = 0; i < (int)tmp.size() / 2; ++i)
+				black.push_back(tmp[i]);
+			for (; i < (int)tmp.size(); ++i)
+				white.push_back(tmp[i]);
+			
+			this->ai->new_game(black, white, balls, (args[3] == "w") ? GAME_PLAYER_B : GAME_PLAYER_A);
+			
+			break;
+		}
 		default:
 			return "? Unknown in-game command: " + iter->second;
 	}
