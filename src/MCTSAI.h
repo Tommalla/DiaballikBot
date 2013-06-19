@@ -31,6 +31,7 @@ class MCTSAI : public AI {
 		virtual void play(vector<Move> moves);
 		virtual void undo_turn (vector< Move > moves);
 		virtual void new_game (const vector<Point> black, const vector<Point> white, const vector<Point> ball, const GamePlayer& player);
+		virtual ~MCTSAI() {};
 };
 
 #endif // MCTSAI_H
