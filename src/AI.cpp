@@ -30,8 +30,11 @@ void AI::play(vector<Move> moves) {
 		this->player = engine::getOppositePlayer(
 			engine::getPlayerFor(this->currentGame.getFieldAt(moves.begin()->from)));
 		
-	for (Move move: moves)
+	for (Move move: moves) {
+		if (!this->currentGame.isMoveValid(move))
+			fprintf(stderr, "invalid move! %d %d -> %d %d", move.from.x, move.from.y, move.to.x, move.to.y);
 		this->currentGame.makeMove(move);
+	}
 	
 	this->currentGame.finishMove();
 	

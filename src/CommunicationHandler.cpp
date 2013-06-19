@@ -9,6 +9,7 @@ const string CommunicationHandler::readLine() {
 	static char buffer[BUFFER_SIZE];
 	
 	fgets(buffer, BUFFER_SIZE, stdin);
+	fprintf(stderr, buffer);
 	
 	string res = buffer;
 	res.pop_back();
@@ -23,6 +24,7 @@ void CommunicationHandler::init() {
 	while (666) {
 		command = this->readLine();
 		printf("%s", (GTPParser::getInstance().executeCommand(command)).c_str());
+		fprintf(stderr, "Done!\n");
 		fflush(stdout);
 	}
 }

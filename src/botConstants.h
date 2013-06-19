@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const int BUFFER_SIZE = 30;
+const int BUFFER_SIZE = 100;
 const int INF = 999999;
 
 //MCTSAI:
