@@ -29,6 +29,7 @@ class MCTSAI : public AI {
 		
 		virtual const std::vector< Move, std::allocator< Move > > gen_move (const GamePlayer& player);
 		virtual void play(vector<Move> moves);
+		virtual void undo_turn (vector< Move > moves);
 };
 
 #endif // MCTSAI_H

@@ -20,6 +20,7 @@ class AI {
 		AI();
 		virtual const vector<Move> gen_move(const GamePlayer& player);
 		virtual void play(vector<Move> moves);
+		virtual void undo_turn(vector<Move> moves);
 };
 
 #endif // AI_H

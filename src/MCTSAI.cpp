@@ -1,10 +1,13 @@
 /* Tomasz [Tommalla] Zakrzewski, 2013
 All rights reserved */
 
+#include <cassert>
 #include <ctime>
+#include <algorithm>
 #include "MCTSAI.h"
 #include "botConstants.h"
 #include "CommunicationHandler.h"
+#include "../DiaballikEngine/src/functions.h"
 
 void MCTSAI::updateLimits() {
 	double val = (double)MCTNode::trivialWins / this->playoutsLimit;
@@ -54,6 +57,23 @@ void MCTSAI::play (vector< Move > moves) {
 		this->MCTRoot = newRoot;
 	} else
 		CommunicationHandler::getInstance().printDebug("MCTRoot is NULL! :O");
+}
+
+void MCTSAI::undo_turn (vector< Move > moves) {
+	AI::undo_turn (moves);
+	
+	//for the time being:
+	reverse(moves.begin(), moves.end());
+	for (Move move: moves) {
+		move.revert();
+		assert(this->currentGame.isMovePossible(move));
+		this->currentGame.makeMove(move, true);
+	}
+	
+	this->currentGame.setCurrentPlayer(this->currentGame.getCurrentPlayer());
+	
+	delete this->MCTRoot;
+	this->MCTRoot = NULL;
 }
 
 

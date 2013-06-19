@@ -11,6 +11,7 @@ GTPParser::GTPParser() : Singleton< GTPParser >() {
 	
 	this->commandMap.insert({"play", GTP_PLAY});
 	this->commandMap.insert({"gen_move", GTP_GEN_MOVE});
+	this->commandMap.insert({"undo_turn", GTP_UNDO_TURN});
 }
 
 void GTPParser::setAI(AI* ai) {
@@ -36,7 +37,6 @@ const string GTPParser::executeCommand(const string& command) {
 	
 	switch (iter->second) {
 		case GTP_PLAY:
-			CommunicationHandler::getInstance().printDebug("args.size() = " + string({char(args.size() + '0')}));
 			assert(args.size() == 3);
 			
 			moves = engine::convertToMoves(args[2]);
@@ -58,6 +58,13 @@ const string GTPParser::executeCommand(const string& command) {
 				
 				return res + "\n\n";
 			}
+			break;
+		case GTP_UNDO_TURN:
+			assert(args.size() == 3);
+			
+			moves = engine::convertToMoves(args[2]);
+			
+			this->ai->undo_turn(moves);
 			break;
 		default:
 			return "? Unknown in-game command: " + iter->second;

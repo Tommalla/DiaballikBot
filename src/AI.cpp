@@ -39,3 +39,6 @@ void AI::play(vector<Move> moves) {
 	return;
 }
 
+void AI::undo_turn (vector< Move > moves) {
+	assert(this->player != NONE);	//caus if so, then there's certainly an error/misuse of the bot
+}
