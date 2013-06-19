@@ -18,10 +18,10 @@ set (SOURCES
 	NullAI.cpp
 )
 
-add_executable (DiaballikBot ${SOURCES} 
+add_executable (NullAI ${SOURCES} 
 	${HEADERS} 
 )
 
-target_link_libraries(DiaballikBot DiaballikEngine)
+target_link_libraries(NullAI DiaballikEngine)
 
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
